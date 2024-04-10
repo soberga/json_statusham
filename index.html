@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Json Statusham - minimalistic task list</title>
+<style>
+    body {
+        background-color: #333;
+        color: #fff;
+    }
+    #container {
+        width: 300px;
+        padding: 20px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #444;
+    }
+    .item {
+        display: flex;
+        justify-content: space-between;
+        background-color: #555;
+        padding: 10px;
+        margin-bottom: 5px;
+        cursor: pointer;
+    }
+    .delete-button, #clearButton {
+        background: none;
+        border: none;
+        color: #ff6961; /* Red for delete button */
+        cursor: pointer;
+    }
+    .action-button {
+        background: none;
+        border: none;
+        color: blueviolet;
+        cursor: pointer;
+    }
+    #newItemText {
+        background-color: #666;
+        color: #fff;
+        border: none;
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div id="container">
+    <input type="text" id="newItemText" onkeypress="handleKeyPress(event)">
+    <button onclick="addItem()" class="action-button">Add Item</button>
+    <div id="itemsContainer" ondrop="drop(event)" ondragover="allowDrop(event)">
+    </div>
+    <div>
+        <button onclick="exportList()" class="action-button">Export JSON</button>
+        <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="importList(event)">
+        <button onclick="document.getElementById('fileInput').click()" class="action-button">Import JSON</button>
+        <button id="clearButton" onclick="clearList()" class="action-button">Clear List</button>
+    </div>
+</div>
+
+<script>
+    let draggedItem;
+
+    function allowDrop(event) {
+        event.preventDefault();
+    }
+
+    function drag(event) {
+        draggedItem = event.target;
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        if (event.target.className === 'item') {
+            event.target.parentNode.insertBefore(draggedItem, event.target);
+        } else {
+            event.target.appendChild(draggedItem);
+        }
+    }
+
+    function addItem() {
+        const newItemText = document.getElementById('newItemText').value.trim();
+        if (newItemText === '') return;
+        
+        const newItem = document.createElement('div');
+        newItem.className = 'item';
+        newItem.draggable = true;
+        newItem.addEventListener('dragstart', drag);
+        
+        const itemText = document.createElement('span');
+        itemText.textContent = newItemText;
+        newItem.appendChild(itemText);
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-button';
+        deleteButton.innerText = 'Delete';
+        deleteButton.onclick = function() {
+            newItem.remove();
+        };
+        newItem.appendChild(deleteButton);
+        
+        document.getElementById('itemsContainer').appendChild(newItem);
+        document.getElementById('newItemText').value = '';
+    }
+
+    function exportList() {
+        const items = [];
+        const itemElements = document.querySelectorAll('.item');
+        itemElements.forEach(item => {
+            const text = item.querySelector('span').textContent;
+            items.push({
+                text: text,
+                priority: Array.from(item.parentNode.children).indexOf(item)
+            });
+        });
+        const json = JSON.stringify(items, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'list.json';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+
+    function importList(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const json = event.target.result;
+                const items = JSON.parse(json);
+                items.forEach(item => {
+                    const newItem = document.createElement('div');
+                    newItem.className = 'item';
+                    newItem.draggable = true;
+                    newItem.addEventListener('dragstart', drag);
+                    
+                    const itemText = document.createElement('span');
+                    itemText.textContent = item.text;
+                    newItem.appendChild(itemText);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'delete-button';
+                    deleteButton.innerText = 'Delete';
+                    deleteButton.onclick = function() {
+                        newItem.remove();
+                    };
+                    newItem.appendChild(deleteButton);
+
+                    document.getElementById('itemsContainer').appendChild(newItem);
+                });
+            } catch (error) {
+                alert('Invalid JSON file!');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            addItem();
+        }
+    }
+
+    function clearList() {
+        const itemsContainer = document.getElementById('itemsContainer');
+        while (itemsContainer.firstChild) {
+            itemsContainer.removeChild(itemsContainer.firstChild);
+        }
+    }
+</script>
+</body>
+</html>
