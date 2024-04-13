@@ -1,0 +1,38 @@
+body {
+    background-color: #333;
+    color: #fff;
+}
+#container {
+    width: 300px;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: #444;
+}
+.item {
+    display: flex;
+    justify-content: space-between;
+    background-color: #555;
+    padding: 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+.delete-button, #clearButton {
+    background: none;
+    border: none;
+    color: #ff6961; /* Red for delete button */
+    cursor: pointer;
+}
+.action-button {
+    background: none;
+    border: none;
+    color: blueviolet;
+    cursor: pointer;
+}
+#newItemInput {
+    background-color: #666;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    margin-bottom: 10px;
+}
