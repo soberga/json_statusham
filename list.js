@@ -32,6 +32,10 @@ function drop(event) {
 
 function addItem() {
     const newItemInput = document.getElementById('newItemInput').value.trim();
+    addItemToList(newItemInput);
+}
+
+function addItemToList(text) {
     if (newItemInput === '') return;
     
     const newItem = document.createElement('div');
@@ -40,7 +44,7 @@ function addItem() {
     newItem.addEventListener('dragstart', drag);
     
     const itemText = document.createElement('span');
-    itemText.textContent = newItemInput;
+    itemText.textContent = text;
     newItem.appendChild(itemText);
     
     const deleteButton = document.createElement('button');
@@ -87,24 +91,7 @@ function importList(event) {
             const json = event.target.result;
             const items = JSON.parse(json);
             items.forEach(item => {
-                const newItem = document.createElement('div');
-                newItem.className = 'item';
-                newItem.draggable = true;
-                newItem.addEventListener('dragstart', drag);
-                
-                const itemText = document.createElement('span');
-                itemText.textContent = item.text;
-                newItem.appendChild(itemText);
-
-                const deleteButton = document.createElement('button');
-                deleteButton.className = 'delete-button';
-                deleteButton.innerText = 'Delete';
-                deleteButton.onclick = function() {
-                    newItem.remove();
-                };
-                newItem.appendChild(deleteButton);
-
-                document.getElementById('items').appendChild(newItem);
+                addItemToList(item.text)
             });
         } catch (error) {
             alert('Invalid JSON file!');
