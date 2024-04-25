@@ -21,6 +21,12 @@ function drag(event) {
     draggedItem = event.target;
 }
 
+function toggleItemComplete(event) {
+    event.target.className === 'item' ?
+        event.target.className = 'completedItem' :
+        event.target.className = 'item'
+}
+
 function drop(event) {
     event.preventDefault();
     if (event.target.className === 'item') {
@@ -36,20 +42,20 @@ function addItem() {
 }
 
 function addItemToList(text) {
-    if (newItemInput === '') return;
+    if (text === '') return;
     
     const newItem = document.createElement('div');
     newItem.className = 'item';
     newItem.draggable = true;
     newItem.addEventListener('dragstart', drag);
+    newItem.addEventListener('click', toggleItemComplete)
     
     const itemText = document.createElement('span');
     itemText.textContent = text;
     newItem.appendChild(itemText);
-    
     const deleteButton = document.createElement('button');
     deleteButton.className = 'delete-button';
-    deleteButton.innerText = 'Delete';
+    deleteButton.innerText = 'x';
     deleteButton.onclick = function() {
         newItem.remove();
     };

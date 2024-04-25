@@ -17,10 +17,20 @@ body {
     margin-bottom: 5px;
     cursor: pointer;
 }
+
+.completedItem {
+    display: flex;
+    justify-content: space-between;
+    background-color: #03852d;
+    padding: 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
 .delete-button, #clearButton {
     background: none;
     border: none;
-    color: #ff6961; /* Red for delete button */
+    color: #ff6961;
     cursor: pointer;
 }
 .action-button {
