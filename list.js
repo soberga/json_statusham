@@ -38,14 +38,14 @@ function drop(event) {
 
 function addItem() {
     const newItemInput = document.getElementById('newItemInput').value.trim();
-    addItemToList(newItemInput);
+    addItemToList(newItemInput, 'item');
 }
 
-function addItemToList(text) {
+function addItemToList(text, type) {
     if (text === '') return;
     
     const newItem = document.createElement('div');
-    newItem.className = 'item';
+    newItem.className = type;
     newItem.draggable = true;
     newItem.addEventListener('dragstart', drag);
     newItem.addEventListener('click', toggleItemComplete)
@@ -67,11 +67,13 @@ function addItemToList(text) {
 
 function exportList() {
     const items = [];
-    const itemElements = document.querySelectorAll('.item');
+    const itemElements = document.querySelectorAll('.item, .completedItem');
     itemElements.forEach(item => {
         const text = item.querySelector('span').textContent;
+        const type = item.className;
         items.push({
             text: text,
+            type: type,
             priority: Array.from(item.parentNode.children).indexOf(item)
         });
     });
@@ -97,7 +99,8 @@ function importList(event) {
             const json = event.target.result;
             const items = JSON.parse(json);
             items.forEach(item => {
-                addItemToList(item.text)
+                const type = item.type ?? 'item';
+                addItemToList(item.text, type)
             });
         } catch (error) {
             alert('Invalid JSON file!');
